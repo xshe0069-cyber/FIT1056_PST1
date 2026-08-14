@@ -166,17 +166,14 @@ def main():
         elif choice == '3':
             # TODO: Get teacher_id and new details, then call update_teacher().
             # Example: update_teacher(1, speciality="Advanced Piano")
-             teacher_id = int(
+            teacher_id = int(
                 input("Enter teacher ID: "))
 
-            speciality = input(
-                "Enter new speciality: "
-            )
+            speciality = input("Enter new speciality: ")
 
             update_teacher(
                 teacher_id,
-                speciality=speciality
-            )
+                speciality=speciality)
             made_change = True
         elif choice == '4':
             # TODO: Get student_id, then call remove_student().
