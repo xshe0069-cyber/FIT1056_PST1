@@ -37,6 +37,47 @@ def save_data(path=DATA_FILE):
         json.dump(app_data, f, indent=4)
     print("Data saved successfully.")
 
+def find_students_by_id(student_id):
+    for student in app_data['students']:
+        if student_id == student['id']:
+            return student
+    return None
+
+def front_desk_register(name, instrument):
+    student_id = app_data['next_student_id'] 
+
+    new_student = {"id": student_id, "name": name, "enrolled_in": [instrument]} 
+    app_data['students'].append(new_student)
+    app_data['next_student_id'] += 1  
+    print(f"Front Desk: Successfully registered "
+          f"'{name}' and enrolled them in '{instrument}'.") 
+
+def list_students():
+    print("\n--- Student List ---")
+
+    if not app_data['students']:
+        print("No students in the system")
+        return
+
+    for student in app_data['students']:
+        print(
+            f"ID: {student['id']}, "
+            f"Name: {student['name']}, "
+            f"Enrolled in: {student['enrolled_in']}")
+
+def list_teachers():
+    print("\n--- Teacher List ---")
+
+    if not app_data['teachers']:
+        print("No teachers in the system.")
+        return
+
+    for teacher in app_data['teachers']:
+        print(
+            f"ID: {teacher['id']}, "
+            f"Name: {teacher['name']}, "
+            f"Speciality: {teacher['speciality']}")                          
+
 def add_teacher(name, speciality):
     """Adds a teacher dictionary to the data store."""
     # TODO: Get the next teacher ID from app_data['next_teacher_id'].
@@ -70,7 +111,7 @@ def remove_student(student_id):
             print(f"Remove successfully")
             return
 
-        print(f"Error: Student with ID {student_id} not found.")    
+    print(f"Error: Student with ID {student_id} not found.")    
     # If found, use the .remove() method on the list to delete it.
     # A list comprehension is a clean way to do this:
     # app_data['students'] = [s for s in app_data['students'] if s['id'] != student_id]
@@ -83,7 +124,7 @@ def remove_teacher(teacher_id):
             print(f"Remove successfully")
             return
 
-        print(f"Error: Teacher with ID {teacher_id} not found.")  
+    print(f"Error: Teacher with ID {teacher_id} not found.")  
 
 def update_student(student_id, **fields):
     for student in app_data['students']:
@@ -95,22 +136,22 @@ def update_student(student_id, **fields):
 
     print(f"Error: Student with ID {student_id} not found.")    
 
-def check_in(student_id, course_id, timestamp=None):
+def check_in(student_id, instrument, timestamp=None):
     """Records a student's attendance for a course."""
     if timestamp is None:
         # TODO: Get the current time as a string using datetime.datetime.now().isoformat()
         timestamp = datetime.datetime.now().isoformat()
     
     # TODO: Create a check-in record dictionary.
-    # It should contain 'student_id', 'course_id', and 'timestamp'.
+    # It should contain 'student_id', 'instrument', and 'timestamp'.
     check_in_record = {
         "student_id": student_id,
-        "course_id": course_id,
+        "instrument": instrument,
         "timestamp": timestamp
     }
     # TODO: Append this new record to the app_data['attendance'] list.
     app_data['attendance'].append(check_in_record)
-    print(f"Receptionist: Student {student_id} checked into {course_id}.")
+    print(f"Receptionist: Student {student_id} checked into {instrument}.")
 
 def print_student_card(student_id):
     """Creates a text file badge for a student."""
@@ -147,16 +188,22 @@ def main():
         print("2. Print Student Card")
         print("3. Update Teacher Info")
         print("4. Remove Student")
+        print("5. Register new student")
+        print("6. Add teacher")
+        print("7. List All students")
+        print("8. List All teachers")
+        print("9. Update Student Info")
+        print("10. Remove Teacher")
         print("q. Quit and Save")
         
         choice = input("Enter your choice: ")
         
         made_change = False # A flag to track if we need to save
         if choice == '1':
-            # TODO: Get student_id and course_id from user, then call check_in().
+            # TODO: Get student_id and instrument from user, then call check_in().
             student_id = int(input("Enter student ID: "))
-            course_id = int(input("Enter course ID: "))
-            check_in(student_id, course_id)
+            instrument = int(input("Enter course ID: "))
+            check_in(student_id, instrument)
             made_change = True
         elif choice == '2':
             # TODO: Get student_id, then call print_student_card().
@@ -183,6 +230,30 @@ def main():
 
             remove_student(student_id)
             made_change = True
+        elif choice == '5':
+            name = input("Enter student name: ")
+            instrument = input("Enter student's instrument: ")
+            front_desk_register(name, instrument)
+            made_change = True
+        elif choice == '6':
+            name = input("Enter teacher name: ")
+            speciality = input("Enter teacher's speciality: ")
+            add_teacher(name, speciality)
+            made_change = True
+        elif choice == '7':
+            list_students()
+        elif choice == '8':
+            list_teachers()
+        elif choice == '9':
+            student_id = int(input("Enter student ID: "))
+            new_name = input("Enter the new student name: ")
+            new_instrument = input("Student's instrument: ")
+            update_student(student_id, name = new_name, enrolled_in = [new_instrument])
+            made_change = True
+        elif choice == '10':
+            teacher_id = int(input("Enter teacher id: "))
+            remove_teacher(teacher_id)
+            made_change = True    
         elif choice.lower() == 'q':
             print("Saving final changes and exiting.")
             break
