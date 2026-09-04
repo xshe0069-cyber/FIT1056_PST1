@@ -28,7 +28,143 @@ def switch_course(manager, student_id, from_course_id, to_course_id):
         print("Swith successfully")
     else:
         print("Switch not successful, please check your input")    
-    
+
+def list_users(users):
+    if not users:
+        print("No users found")
+        return
+
+    for user in users:
+        print(user.get_details()) 
+
+def front_desk_lookup(manager, term):
+    students = manager.find_users(
+        manager.students,
+        term
+    )
+
+    teachers = manager.find_users(
+        manager.teachers,
+        term
+    )
+
+    print("\n--- Matching Students ---")
+    list_users(students)
+
+    print("\n--- Matching Teachers ---")
+    list_users(teachers)
+
+def front_desk_register(manager, name, course_id):
+    student = manager.register_student(
+        name,
+        course_id
+    )
+
+    if student:
+        print(
+            f"Student '{student.name}' "
+            f"registered successfully. "
+            f"Student ID: {student.id}"
+        )
+    else:
+        print(
+            "Registration failed. "
+            "Please check the course ID."
+        )
+
+def front_desk_add_teacher(
+    manager,
+    name,
+    speciality
+):
+    teacher = manager.add_teacher(
+        name,
+        speciality
+    )
+
+    print(
+        f"Teacher '{teacher.name}' "
+        f"added successfully. "
+        f"Teacher ID: {teacher.id}"
+    )
+
+def front_desk_update_student(
+    manager,
+    student_id,
+    name
+):
+    success = manager.update_student(
+        student_id,
+        name = name
+    )
+
+    if success:
+        print("Student updated successfully.")
+    else:
+        print("Student ID not found.")
+
+def front_desk_update_teacher(
+    manager,
+    teacher_id,
+    name,
+    speciality
+):
+    success = manager.update_teacher(
+        teacher_id,
+        name=name,
+        speciality=speciality
+    )
+
+    if success:
+        print("Teacher updated successfully.")
+    else:
+        print("Teacher ID not found.")
+
+
+def front_desk_remove_student(
+    manager,
+    student_id
+):
+    success = manager.remove_student(
+        student_id
+    )
+
+    if success:
+        print("Student removed successfully.")
+    else:
+        print("Student ID not found.")
+
+
+def front_desk_remove_teacher(
+    manager,
+    teacher_id
+):
+    success = manager.remove_teacher(
+        teacher_id
+    )
+
+    if success:
+        print("Teacher removed successfully.")
+    else:
+        print(
+            "Teacher could not be removed. "
+            "Check the ID or assigned courses."
+        )
+
+
+def front_desk_print_card(
+    manager,
+    student_id
+):
+    success = manager.print_student_card(
+        student_id
+    )
+
+    if success:
+        print("Student card created successfully.")
+    else:
+        print("Student ID not found.")
+           
 
 def main():
     """Main function to run the MSMS application."""
@@ -39,6 +175,16 @@ def main():
         print("1. View daily roster")
         print("2. Check in student")
         print("3. Switch course")
+        print("4. Register new student")
+        print("5. Lookup student / teacher")
+        print("6. List all students")
+        print("7. List all teachers")
+        print("8. Add teacher")
+        print("9. Update student")
+        print("10. Update teacher")
+        print("11. Remove student")
+        print("12. Remove teacher")
+        print("13. Print student card")
         print("Q. Quit")
         # TODO: Create a menu for the new PST3 functions.
         # Get user input and call the appropriate view function, passing 'manager' to it.
@@ -59,6 +205,96 @@ def main():
                 student_id,
                 from_course_id,
                 to_course_id
+            )
+        elif choice == "4":
+            name = input(
+                "Enter student name: "
+            )
+            course_id = int(
+                input("Enter course ID: ")
+            )
+            front_desk_register(
+                manager,
+                name,
+                course_id
+            ) 
+        elif choice == "5":
+            term = input(
+                "Enter search term: "
+            )
+            front_desk_lookup(
+                manager,
+                term
+            )
+        elif choice == "6":
+            print("\n--- Student List ---")
+            list_users(manager.students)
+        elif choice == "7":
+            print("\n--- Teacher List ---")
+            list_users(manager.teachers)
+        elif choice == "8":
+            name = input(
+                "Enter teacher name: "
+            )
+            speciality = input(
+                "Enter teacher speciality: "
+            )
+            front_desk_add_teacher(
+                manager,
+                name,
+                speciality
+            )
+        elif choice == "9":
+            student_id = int(
+                input("Enter student ID: ")
+            )
+            name = input(
+                "Enter new name: "
+            )
+            front_desk_update_student(
+                manager,
+                student_id,
+                name
+            )
+        elif choice == "10":
+            teacher_id = int(
+                input("Enter teacher ID: ")
+            )
+            name = input(
+                "Enter new name: "
+            )
+            speciality = input(
+                "Enter new speciality: "
+            )
+            front_desk_update_teacher(
+                manager,
+                teacher_id,
+                name,
+                speciality
+            )
+        elif choice == "11":
+            student_id = int(
+                input("Enter student ID: ")
+            )
+            front_desk_remove_student(
+                manager,
+                student_id
+            )
+        elif choice == "12":
+            teacher_id = int(
+                input("Enter teacher ID: ")
+            )
+            front_desk_remove_teacher(
+                manager,
+                teacher_id
+            )
+        elif choice == "13":
+            student_id = int(
+                input("Enter student ID: ")
+            )
+            front_desk_print_card(
+                manager,
+                student_id
             )
         elif choice.lower() == 'q':
             break
