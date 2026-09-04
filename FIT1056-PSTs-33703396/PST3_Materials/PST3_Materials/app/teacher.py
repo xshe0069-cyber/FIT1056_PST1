@@ -8,6 +8,17 @@ class TeacherUser(User):
         super().__init__(user_id, name)
         self.speciality = speciality
 
+    def get_details(self):
+        return (f"ID: {self.id}, "
+            f"Name: {self.name}, "
+            f"Speciality: {self.speciality}") 
+
+    def matches(self, term):
+        term = term.lower()
+
+        return(term in self.name.lower()
+            or term in self.speciality.lower())  
+
 class Course:
     """Represents a single course offered by the school, linked to a teacher."""
     def __init__(self, course_id, name, instrument, teacher_id):
