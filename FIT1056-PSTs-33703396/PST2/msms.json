@@ -1,0 +1,49 @@
+{
+    "students": [
+        {
+            "id": 1,
+            "name": "sshen",
+            "enrolled_in": [
+                "violin"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "ABCD#123*+-123",
+            "enrolled_in": [
+                "q"
+            ]
+        }
+    ],
+    "teachers": [
+        {
+            "id": 1,
+            "name": "lee",
+            "speciality": "violin"
+        }
+    ],
+    "attendance": [
+        {
+            "student_id": 6,
+            "course_id": 2,
+            "timestamp": "2026-08-15T01:17:06.341543"
+        },
+        {
+            "student_id": 1,
+            "course_id": 3,
+            "timestamp": "2026-08-15T01:19:31.718959"
+        },
+        {
+            "student_id": 2,
+            "course_id": 3,
+            "timestamp": "2026-08-15T01:25:59.173462"
+        },
+        {
+            "student_id": 1,
+            "instrument": 2,
+            "timestamp": "2026-08-15T13:09:15.311772"
+        }
+    ],
+    "next_student_id": 3,
+    "next_teacher_id": 2
+}
