@@ -82,17 +82,28 @@ class ScheduleManager:
 
 # TODO: Also implement find_student_by_id and find_course_by_id helper methods.
 
+    def _find_by_id(self, item, target_id):
+        for item in item:
+            if item.id == target_id:
+               return item
+        return None
+
     def find_student_by_id(self, student_id):
-        for student in self.students:
-            if student.id == student_id:
-               return student
-        return None 
+        return self._find_by_id(self.students, student_id)
 
     def find_course_by_id(self, course_id):
-        for course in self.courses:
-            if course.id == course_id:
-               return course
-        return None 
+        return self._find_by_id(self.courses, course_id)
+
+    def find_teacher_by_id(self, teacher_id):
+        return self._find_by_id(self.teachers, teacher_id)
+    
+    def find_users(self, users, term):
+        results = []
+
+        for user in users:
+            if user.matches(term):
+                results.append(user)
+        return results                   
 
     def get_daily_roster(self, day):
         roster = []
@@ -110,14 +121,132 @@ class ScheduleManager:
 
         if not student or not from_course or not to_course:
             return False
+        if from_course_id not in student.enrolled_course_ids:
+            return False
+        if student_id not in from_course.enrolled_student_ids:
+            return False
+        if to_course_id in student.enrolled_course_ids:
+            return False
 
         student.enrolled_course_ids.remove(from_course_id)
         from_course.enrolled_student_ids.remove(student_id)
 
         student.enrolled_course_ids.append(to_course_id)
-        to_course.enrolled_student_ids.append(student_id)
+        if student_id not in to_course.enrolled_student_ids:
+            to_course.enrolled_student_ids.append(student_id)
 
         self._save_data()
 
         return True
 
+    def _get_next_id(self, item):
+        if item:
+            return max(item.id for item in item) + 1
+
+        return 1
+ 
+    def register_student(self, name, course_id):
+        course = self.find_course_by_id(course_id)
+        if not course:
+            return None
+        new_id = self._get_next_id(self.students)
+
+        student = StudentUser(new_id, name)
+        student.enrolled_course_ids.append(course_id)
+        course.enrolled_student_ids.append(new_id)
+
+        self.students.append(student)
+        self._save_data()
+
+        return student        
+
+    def update_student(self, student_id, **fields):
+        student = self.find_student_by_id(student_id)
+        if not student:
+            return False
+        if "name" in fields:
+            student.name = fields["name"]
+        self._save_data()
+        return True
+
+    def remove_student(self, student_id):
+        student = self.find_student_by_id(student_id)
+
+        if not student:
+            return False
+        for course in self.courses:
+            if student_id in course.enrolled_student_ids:
+                 course.enrolled_student_ids.remove(student_id)
+
+        self.students.remove(student)
+        self._save_data()
+        return True
+
+    def add_teacher(self, name, speciality):
+        new_id = self._get_next_id(self.teachers)
+
+        teacher = TeacherUser(
+         new_id,
+         name,
+         speciality)
+
+        self.teachers.append(teacher)
+
+        self._save_data()
+
+        return teacher
+
+    def update_teacher(self, teacher_id, **fields):
+        teacher = self.find_teacher_by_id(teacher_id)
+
+        if not teacher:
+           return False
+
+        if "name" in fields:
+           teacher.name= fields["name"]
+
+        if "speciality" in fields:
+           teacher.speciality = fields["speciality"]
+
+        self._save_data()
+
+        return True 
+
+    def remove_teacher(self, teacher_id):
+        teacher = self.find_teacher_by_id(teacher_id)
+
+        if not teacher:
+           return False
+
+        for course in self.courses:
+            if course.teacher_id == teacher_id:
+               return False
+
+        self.teachers.remove(teacher)
+        self._save_data()
+
+        return True 
+
+    def print_student_card(self, student_id):
+        student = self.find_student_by_id(student_id)
+
+        if not student:
+           return False
+
+        filename = f"student_{student.id}_card.txt"
+
+        with open(filename, "w") as file:
+           file.write("===== STUDENT CARD =====\n")
+           file.write(f"ID: {student.id}\n")
+           file.write(f"Name: {student.name}\n")
+           file.write("Courses:\n")
+
+           for course_id in student.enrolled_course_ids:
+            course = self.find_course_by_id(course_id)
+
+            if course:
+                file.write(
+                    f"{course.id}: {course.name}\n"
+                )
+
+        return True         
