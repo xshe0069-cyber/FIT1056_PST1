@@ -1,6 +1,0 @@
-===== STUDENT CARD =====
-ID: 1
-Name: Alice Johnson
-Courses:
-101: Beginner Piano
-103: Intermediate Piano
