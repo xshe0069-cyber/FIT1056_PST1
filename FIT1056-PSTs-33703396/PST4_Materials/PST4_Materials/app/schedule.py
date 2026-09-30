@@ -128,3 +128,114 @@ class ScheduleManager:
         self._save_data()
         return True
 
+    def _find_by_id(self, item, target_id):
+            for item in item:
+                if item.id == target_id:
+                   return item
+            return None
+    
+    def find_course_by_id(self, course_id):
+            return self._find_by_id(self.courses, course_id)
+    
+    def find_teacher_by_id(self, teacher_id):
+            return self._find_by_id(self.teachers, teacher_id)
+        
+    def find_users(self, users, term):
+            results = []
+    
+            for user in users:
+                if user.matches(term):
+                    results.append(user)
+            return results  
+    
+    def get_switch_course(self, student_id, from_course_id, to_course_id):
+            student = self.find_student_by_id(student_id)
+            from_course = self.find_course_by_id(from_course_id)
+            to_course = self.find_course_by_id(to_course_id)
+    
+            if not student or not from_course or not to_course:
+                return False
+            if from_course_id not in student.enrolled_course_ids:
+                return False
+            if student_id not in from_course.enrolled_student_ids:
+                return False
+            if to_course_id in student.enrolled_course_ids:
+                return False
+    
+            student.enrolled_course_ids.remove(from_course_id)
+            from_course.enrolled_student_ids.remove(student_id)
+    
+            student.enrolled_course_ids.append(to_course_id)
+            if student_id not in to_course.enrolled_student_ids:
+                to_course.enrolled_student_ids.append(student_id)
+    
+            self._save_data()
+    
+            return True
+
+    def update_student(self, student_id, **fields):
+            student = self.find_student_by_id(student_id)
+            if not student:
+                return False
+            if "name" in fields:
+                student.name = fields["name"]
+            self._save_data()
+            return True
+    
+    def remove_student(self, student_id):
+            student = self.find_student_by_id(student_id)
+    
+            if not student:
+                return False
+            for course in self.courses:
+                if student_id in course.enrolled_student_ids:
+                     course.enrolled_student_ids.remove(student_id)
+    
+            self.students.remove(student)
+            self._save_data()
+            return True
+    
+    def add_teacher(self, name, speciality):
+            new_id = self._get_next_id(self.teachers)
+    
+            teacher = TeacherUser(
+             new_id,
+             name,
+             speciality)
+    
+            self.teachers.append(teacher)
+    
+            self._save_data()
+    
+            return teacher
+    
+    def update_teacher(self, teacher_id, **fields):
+            teacher = self.find_teacher_by_id(teacher_id)
+    
+            if not teacher:
+               return False
+    
+            if "name" in fields:
+               teacher.name= fields["name"]
+    
+            if "speciality" in fields:
+               teacher.speciality = fields["speciality"]
+    
+            self._save_data()
+    
+            return True 
+    
+    def remove_teacher(self, teacher_id):
+            teacher = self.find_teacher_by_id(teacher_id)
+    
+            if not teacher:
+               return False
+    
+            for course in self.courses:
+                if course.teacher_id == teacher_id:
+                   return False
+    
+            self.teachers.remove(teacher)
+            self._save_data()
+    
+            return True                  
