@@ -10,14 +10,8 @@ def show_roster_page(manager):
     day = st.selectbox("Select a day", ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
     roster_data = []
 
-    for course in manager.courses:
-        for lesson in course.lessons:
-            if lesson["day"] == day:
-                roster_data.append({"name": course.name,
-                                    "instrument": course.instrument,
-                                    "start_time": lesson["start_time"],
-                                    "room": lesson["room"]})
-
+    roster_data = manager.daily_roster(day)
+    
     if roster_data:
         df = pd.DataFrame(roster_data)
         st.dataframe(df, use_container_width=True)
