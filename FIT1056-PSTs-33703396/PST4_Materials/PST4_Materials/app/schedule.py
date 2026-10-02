@@ -88,20 +88,28 @@ class ScheduleManager:
                 return student        
         return
 
-    def register_new_student(self, student_name, student_instrument):
+    def check_instrument_courses(self, student_instrument):
+         find_courses = []
+         for course in self.courses:
+              if course.instrument.lower() == student_instrument.strip().lower():
+                   find_courses.append(course.id)
+         return find_courses
+                        
+    def register_new_student(self, student_name, selected_course_id):
         student = StudentUser(0, "") 
         if self.students:
            student.id = max(s.id for s in self.students) + 1
         else:
            student.id = 1
         student.name = student_name
-        for course in self.courses:
-            if course.instrument.lower() == student_instrument.strip().lower():
-                student.enrolled_course_ids.append(course.id)
-                course.enrolled_student_ids.append(student.id)
-                self.students.append(student)
-                self._save_data()
-                return student
+        if selected_course_id != None:
+                for course in self.courses:
+                     if course.id == selected_course_id:       
+                        student.enrolled_course_ids.append(course.id)
+                        course.enrolled_student_ids.append(student.id)
+                        self.students.append(student)
+                        self._save_data()
+                        return student
         return 
 
     def check_in(self, student_id, course_id):
@@ -128,11 +136,31 @@ class ScheduleManager:
         self._save_data()
         return True
 
+    def daily_roster(self, day):
+        roster_data = []
+        for course in self.courses:
+                 for lesson in course.lessons:
+                     if lesson["day"] == day:
+                         roster_data.append({"name": course.name,
+                                             "instrument": course.instrument,
+                                             "start_time": lesson["start_time"],
+                                             "room": lesson["room"]})
+        return roster_data                 
+         
+
     def _find_by_id(self, item, target_id):
             for item in item:
                 if item.id == target_id:
                    return item
             return None
+
+    def _get_next_id(self, items):
+        if items:
+           return max(item.id for item in items) + 1
+        return 1
+
+    def find_student_by_id(self, student_id):
+            return self._find_by_id(self.students, student_id)
     
     def find_course_by_id(self, course_id):
             return self._find_by_id(self.courses, course_id)
@@ -140,14 +168,6 @@ class ScheduleManager:
     def find_teacher_by_id(self, teacher_id):
             return self._find_by_id(self.teachers, teacher_id)
         
-    def find_users(self, users, term):
-            results = []
-    
-            for user in users:
-                if user.matches(term):
-                    results.append(user)
-            return results  
-    
     def get_switch_course(self, student_id, from_course_id, to_course_id):
             student = self.find_student_by_id(student_id)
             from_course = self.find_course_by_id(from_course_id)
