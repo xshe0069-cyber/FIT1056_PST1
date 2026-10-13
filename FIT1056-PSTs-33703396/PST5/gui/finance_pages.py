@@ -5,8 +5,9 @@ import pandas as pd
 def show_finance_page(manager):
     """Renders the UI for all financial operations."""
     st.header("Finance & Payments")
-
-    
+    if not manager.students:
+        st.info("Please register a student before recording payments")
+        return 
     # --- Section 1: Record a Payment ---
     st.subheader("Record New Payment")
     with st.form("payment_form"):
@@ -22,8 +23,11 @@ def show_finance_page(manager):
         if submitted:
             student_id = student_list[selected_student_name]
             # TODO: Call manager.record_payment() and show a success message.
-            manager.record_payment(student_id, amount, method)
-            st.success(f"Payment of {amount} for {selected_student_name} recorded.")
+            success = manager.record_payment(student_id, amount, method)
+            if success:
+               st.success(f"Payment of {amount} for {selected_student_name} recorded.")
+            else:
+                st.error("Payment failed. Check the student, amount, and payment method")   
 
     # --- Section 2: View Payment History ---
     st.subheader("View Student Payment History")
