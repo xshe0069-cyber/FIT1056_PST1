@@ -44,6 +44,7 @@ def test_get_payment_history_no_results(fresh_manager):
     # returns an empty list for a student with no payments.
     student_id_to_test = 2
     fresh_manager.students.append(StudentUser(student_id_to_test, "lee"))
+    
     history = fresh_manager.get_payment_history(student_id_to_test)
     assert history == []
 # tests/test_schedule_manager.py
