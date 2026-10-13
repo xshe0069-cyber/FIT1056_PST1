@@ -14,7 +14,11 @@ def show_student_management_page(manager):
         # st.dataframe(results)
         result = manager.find_students(search_term)
         if result:
-            st.dataframe(result)
+            st.dataframe([{
+                "ID": result.id,
+                "Name": result.name,
+                "Enrolled Course IDs": result.enrolled_course_ids,
+            }])
         else:
             st.write("Can not find the student")    
         
