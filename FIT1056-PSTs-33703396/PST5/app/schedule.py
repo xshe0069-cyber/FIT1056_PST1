@@ -6,6 +6,7 @@ from app.student import StudentUser
 # Corrected Import: TeacherUser and Course now come from the same file.
 from app.teacher import TeacherUser, Course
 
+
 class ScheduleManager:
     """The main controller for all business logic and data handling."""
     def __init__(self, data_path="data/msms.json"):
