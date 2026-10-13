@@ -6,6 +6,7 @@ def show_finance_page(manager):
     """Renders the UI for all financial operations."""
     st.header("Finance & Payments")
 
+    
     # --- Section 1: Record a Payment ---
     st.subheader("Record New Payment")
     with st.form("payment_form"):

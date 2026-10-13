@@ -5,6 +5,7 @@ from gui.student_pages import show_student_management_page
 from gui.roster_pages import show_roster_page
 from gui.finance_pages import show_finance_page
 
+
 def launch():
     """Sets up the main Streamlit application window and navigation."""
     st.set_page_config(layout="wide", page_title="Music School Management System")
