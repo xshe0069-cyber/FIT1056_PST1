@@ -6,12 +6,9 @@ from app.student import StudentUser
 
 # A pytest fixture creates a clean environment for each test function.
 @pytest.fixture
-def fresh_manager():
+def fresh_manager(tmp_path):
     """Creates a fresh ScheduleManager instance using a temporary test data file."""
-    test_file = "test_data.json"
-    # ARRANGE: Ensure no old test file exists.
-    if os.path.exists(test_file):
-        os.remove(test_file)
+    test_file = tmp_path / "test_data.json"
     return ScheduleManager(data_path=test_file)
 
 def test_create_course(fresh_manager):
@@ -49,3 +46,28 @@ def test_get_payment_history_no_results(fresh_manager):
     assert history == []
 # tests/test_schedule_manager.py
 # ... (fixture setup) ...
+
+def test_check_in_saves_attendance(fresh_manager):
+    from datetime import datetime
+
+    fresh_manager.create_course("Beginner Piano", "Piano", 1)
+    student = fresh_manager.register_new_student("Shen", 1)
+
+    assert fresh_manager.check_in(student.id, 1) is True
+    saved_manager = ScheduleManager(fresh_manager.data_path)
+    record = saved_manager.attendance[0]
+    assert record["student_id"] == student.id
+    assert record["course_id"] == 1
+    assert datetime.fromisoformat(record["timestamp"])
+
+
+@pytest.mark.parametrize("search_term", [1, "1", " 1 ", "Shen", " shEN "])
+def test_find_student_by_name_or_id(fresh_manager, search_term):
+    student = StudentUser(1, "Shen")
+    fresh_manager.students.append(student)
+    assert fresh_manager.find_students(search_term) is student
+
+
+def test_find_student_no_match(fresh_manager):
+    fresh_manager.students.append(StudentUser(1, "Shen"))
+    assert fresh_manager.find_students("Unknown") is None
