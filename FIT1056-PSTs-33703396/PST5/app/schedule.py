@@ -192,7 +192,7 @@ class ScheduleManager:
             attendance_record = {
                 "student_id": student_id,
                 "course_id": course_id,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.datetime.now().isoformat()
             }
             self.attendance.append(attendance_record)
             self._save_data()
@@ -323,8 +323,9 @@ class ScheduleManager:
                 return True
 
     def find_students(self, search_term):
+         search_term = str(search_term).strip().lower()
          for student in self.students:
-              if student.id == search_term or student.name.lower() == search_term.lower():
+              if str(student.id) == search_term or student.name.lower() == search_term:
                    return student
          return None 
 
