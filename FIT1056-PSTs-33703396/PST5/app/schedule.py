@@ -91,6 +91,9 @@ class ScheduleManager:
         """Adds a payment record to the finance log."""
     # TODO: Find the student to ensure they exist.
     # Create a payment dictionary with student_id, amount, method, and a timestamp.
+        if amount <= 0 or not method.strip():
+             return False
+
         for student in self.students:
             if student.id == student_id:
                payment_record = {
@@ -104,8 +107,9 @@ class ScheduleManager:
                self._save_data()
                logging.info(f"Payment of {amount} recorded for student ID {student_id}.")
                print(f"Payment of {amount} for student {student_id} recorded.")
-            
-        return "The student does not exist"   
+               return True
+        print("The student does not exist")     
+        return False  
 
     def get_payment_history(self, student_id):
         """Returns a list of all payments for a given student."""
@@ -121,7 +125,7 @@ class ScheduleManager:
            data_to_export = self.finance_log
            headers = ["student_id", "amount", "method", "timestamp"]
         elif kind == "attendance":
-           data_to_export = self.attendance_log # Assuming this exists from PST2
+           data_to_export = self.attendance # Assuming this exists from PST2
            headers = ["student_id", "course_id", "timestamp"]
         else:
            print("Error: Unknown report type.")
