@@ -88,7 +88,7 @@ def test_export_report(tmp_path, kind, headers, empty):
     manager = ScheduleManager(tmp_path / "missing.json")
     record = {"student_id": 1, "timestamp": "2026-10-17T12:00:00"}
     if kind == "finance":
-        record.update(amount=100.5, method='银行卡, "Card"')
+        record.update(amount=100.5, method='Bank card, "Card"')
     else:
         record["course_id"] = 2
     records = [] if empty else [record]
